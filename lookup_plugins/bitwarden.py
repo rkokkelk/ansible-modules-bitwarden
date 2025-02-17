@@ -171,6 +171,10 @@ class Bitwarden(object):
             key), '--output={}'.format(output), '--itemid={}'.format(itemid)]
         return self._run(attachment)
 
+    def get_ssh(self, key, field):
+        data = json.loads(self.get_entry(key, 'item'))
+        return next(v for k, v in data['sshKey'].items() if k == field)
+
 
 class LookupModule(LookupBase):
 
@@ -196,6 +200,8 @@ class LookupModule(LookupBase):
         for term in terms:
             if kwargs.get('custom_field'):
                 values.append(bw.get_custom_field(term, field))
+            elif kwargs.get('ssh'):
+                values.append(bw.get_ssh(term, field))
             elif field == 'notes':
                 values.append(bw.get_notes(term))
             elif kwargs.get('attachments'):
